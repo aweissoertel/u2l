@@ -63,8 +63,11 @@ Node führt die `.ts`-Dateien direkt aus (Type Stripping, kein tsx/ts-node). Des
 - **Das Repo ist öffentlich.** Echte Liederbuch-Dateien (Präambel, `main.tex`, Lieder) und echte
   UG-Seiten/Liedtexte gehören nur nach `examples/` (per `.gitignore` ausgeschlossen) – nie in
   `test/`, `docs/` oder Commits.
-- Commit-Betreff: `<passendes Emoji> <type>: <Zusammenfassung>`, z. B. `✨ feat: …`, `🐛 fix: …`,
-  `📝 docs: …`, `✅ test: …`, `🔧 chore: …`. Text auf Deutsch.
+- Commit-Betreff: `<Emoji> <type>: <Zusammenfassung>`, Text auf Deutsch. Das Emoji zeigt den
+  **Inhalt** der Änderung, nicht den Commit-Typ – also nicht automatisch ✨ für `feat` oder 🐛 für
+  `fix`. Beispiele: `🎸 feat: Griffbilder raten`, `🔤 fix: Umlaute aus UG-Seiten dekodieren`,
+  `📖 feat: Verweise auf andere Liederbücher`, `🐳 ci: Image nach Docker Hub pushen`,
+  `🎛️ feat: Abschnitts-Editor in der Oberfläche`. PR-Titel genauso.
 - Commits werden GPG-signiert (`commit.gpgsign` ist im Repo gesetzt).
 - Nicht direkt auf `main` committen; Feature-Branch + PR.
 - Fehlermeldungen an Nutzer: deutsch, verständlich, ohne interne Details (`UgError`).
