@@ -89,6 +89,7 @@ Stellen weg (der Text bleibt).
   aus einer Akkord-Datenbank, schreibt es aktiv mit dem Kommentar `% GERATEN – bitte prüfen` ans Ende
   des Blocks und gibt eine **Warnung** aus. Gibt es auch dort nichts, kommt eine Zeile
   `% TODO \gtab{Xyz}{…}`. Bestätigte Griffbilder werden in den Katalog übernommen.
+  _Stand: Das Raten ist noch nicht umgesetzt – bisher kommt immer die TODO-Zeile plus Warnung._
 - Der Katalog wurde aus den bestehenden Liedern erstellt. Widersprüche und verdächtige Einträge sind
   dort mit `KONFLIKT` bzw. `PRÜFEN` markiert und müssen einmal geklärt werden.
 - Der Kommentar wird sauber als „einfügen“ geschrieben (in 61 Dateien steht er doppelt kodiert als
@@ -109,7 +110,11 @@ Abgleich mit den Handfassungen: In Abenteuerland und Wackelkontakt treffen diese
 letzten zwei Bridge-Zeilen als eigener Refrain, Zeilen neu umbrochen, Anführungszeichen ergänzt).
 
 - Der Nutzer kann den Typ jedes Abschnitts vor dem Export ändern (Auswahlliste pro Abschnitt in
-  der Weboberfläche).
+  der Weboberfläche) oder den Abschnitt **weglassen**.
+- „Instrumental“ und „Strophe ungezählt“ werden gleich gesetzt (`\beginverse*`); reine
+  Akkordzeilen werden in **jedem** Abschnitt als `{\nolyrics …}` ausgegeben.
+- Liegt ein Akkord bei UG auf einem Leerzeichen, rückt er vor das nächste Wort
+  (`Du \[Dbm]hören` statt `Du\[Dbm] hören`).
 - Jede Textzeile endet mit `\\` (auch die letzte eines Abschnitts).
 - Kein Einrücken im Abschnitt. Zwischen Abschnitten eine Leerzeile.
 - Wiederholte Refrains werden **vollständig** ausgeschrieben (kein `^`, keine Abkürzung).

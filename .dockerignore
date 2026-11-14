@@ -6,3 +6,6 @@
 !tsconfig.json
 !tsconfig.build.json
 !src/
+!chords/
+chords/*
+!chords/catalog.tex
