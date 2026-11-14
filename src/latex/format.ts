@@ -2,11 +2,14 @@ import { usedChords } from "../song/chords.ts";
 import type { ChordsLine, LyricsLine, Section, SectionType } from "../song/types.ts";
 import type { CatalogEntry } from "./catalog.ts";
 import { escapeLatex, type QuoteState } from "./escape.ts";
+import { SONGBOOKS, type SongbookRefs } from "./songbooks.ts";
 
 export interface SongMeta {
   title: string;
   artist: string;
   capo: number | null;
+  /** Verweise auf andere Liederbücher (LSVE, LCopacaBeLa, …). */
+  songbooks?: SongbookRefs;
 }
 
 export interface FormatResult {
@@ -63,10 +66,10 @@ function formatGtabs(
 ): { lines: string[]; missing: string[] } {
   const used = usedChords(sections);
   const known = new Set(catalog.map((e) => e.name));
-  const lines = catalog.map(({ name, shape }) => {
-    const gtab = `\\gtab{${name}}{${shape}}\\ \\ \\ \\ \\ ${GTAB_COMMENT}`;
-    return used.has(name) ? `  ${gtab}` : `%  ${gtab}`;
-  });
+  // Nur Akkorde, die im Lied vorkommen – in Katalog-Reihenfolge.
+  const lines = catalog
+    .filter(({ name }) => used.has(name))
+    .map(({ name, shape }) => `  \\gtab{${name}}{${shape}}\\ \\ \\ \\ \\ ${GTAB_COMMENT}`);
   const missing = [...used].filter((c) => !known.has(c));
   for (const name of missing) lines.push(`% TODO \\gtab{${name}}{…} % Griffbild fehlt im Katalog`);
   return { lines, missing };
@@ -88,11 +91,24 @@ export function formatSong(
     );
   }
 
+  // Song-Keys: by + gesetzte Liederbuch-Verweise, Komma nach jedem außer dem letzten.
+  const keys = [
+    { entry: `by={${escapeLatex(meta.artist)}}`, comment: "Autor des Liedes" },
+    ...SONGBOOKS.filter(({ key }) => meta.songbooks?.[key]).map(({ key, comment }) => ({
+      entry: `${key}={${escapeLatex(meta.songbooks![key]!)}}`,
+      comment,
+    })),
+  ];
+  const keyLines = keys.map(
+    ({ entry, comment }, i) =>
+      `  ${i === 0 ? "[" : ""}${entry}${i < keys.length - 1 ? "," : ""} % ${comment}`,
+  );
+
   const header = [
     "\\songcolumns{1} % auf wie viele Spalten ist das Lied aufgeteilt. Standard: 1",
     "",
     `\\beginsong{${escapeLatex(meta.title)}} % Name des Liedes`,
-    `  [by={${escapeLatex(meta.artist)}} % Autor des Liedes`,
+    ...keyLines,
     "  ]",
     "",
   ];

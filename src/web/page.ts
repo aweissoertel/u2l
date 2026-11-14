@@ -1,3 +1,5 @@
+import { SONGBOOKS } from "../latex/songbooks.ts";
+
 /**
  * Weboberfläche (eine Seite, ohne Build-Schritt). Ablauf:
  * Link abrufen → Abschnitts-Typen / Lagerfeuer-Akkorde / Ersetzungen anpassen → .tex herunterladen.
@@ -31,11 +33,16 @@ export const INDEX_HTML = /* html */ `<!doctype html>
   td, th { text-align: left; padding: .35rem .5rem; border-bottom: 1px solid var(--line); vertical-align: middle; }
   th { font-weight: 600; font-size: .9rem; color: var(--muted); }
   td.preview { color: var(--muted); font-size: .9rem; overflow-wrap: anywhere; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: .5rem; }
-  .chord { display: flex; align-items: center; gap: .4rem; padding: .35rem .5rem; border: 1px solid var(--line); border-radius: 6px; }
-  .chord code { min-width: 3.5rem; font-weight: 600; }
-  .chord input[type=text] { width: 5rem; }
-  .chord label { font-size: .85rem; display: flex; align-items: center; gap: .2rem; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr)); gap: .75rem; }
+  .chord { display: grid; grid-template-columns: minmax(2.5rem, auto) auto minmax(0, 1fr) auto; align-items: center; column-gap: .75rem; padding: .5rem .75rem; border: 1px solid var(--line); border-radius: 8px; }
+  .chord code { font-weight: 600; white-space: nowrap; }
+  .chord .count { font-size: .85rem; font-variant-numeric: tabular-nums; }
+  .chord input[type=text] { width: 100%; min-width: 0; }
+  .chord label { font-size: .9rem; display: flex; align-items: center; gap: .35rem; white-space: nowrap; cursor: pointer; }
+  .chord input[type=checkbox] { margin: 0; }
+  .books { display: grid; grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr)); gap: .75rem; }
+  .books label { display: flex; flex-direction: column; gap: .25rem; font-size: .9rem; color: var(--muted); }
+  .books input { color: var(--fg); }
   .actions { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; margin: 1rem 0 .5rem; }
   pre { background: var(--box); border: 1px solid var(--line); border-radius: 6px; padding: 1rem; overflow-x: auto; font-size: .85rem; line-height: 1.4; max-height: 70vh; }
   ul.warnings { margin: .5rem 0; padding-left: 1.25rem; }
@@ -57,6 +64,9 @@ export const INDEX_HTML = /* html */ `<!doctype html>
     <thead><tr><th>Ultimate Guitar</th><th>Typ</th><th>Anfang</th></tr></thead>
     <tbody id="sections"></tbody>
   </table>
+
+  <h2>Andere Liederbücher <span class="muted">(optional)</span></h2>
+  <div class="books" id="books"></div>
 
   <h2>Akkorde</h2>
   <label><input type="checkbox" id="simplify"> Lagerfeuer-Akkorde (ohne Bass-Töne, maj7, sus, Powerchords)</label>
@@ -85,9 +95,21 @@ export const INDEX_HTML = /* html */ `<!doctype html>
     return node;
   };
 
+  const BOOKS = ${JSON.stringify(SONGBOOKS.map(({ key, label }) => ({ key, label })))};
+
   let tab = null;
   let result = null;
-  const state = { simplify: false, sectionTypes: {}, replace: {} };
+  const state = { simplify: false, sectionTypes: {}, replace: {}, songbooks: {} };
+
+  $("books").replaceChildren(...BOOKS.map(({ key, label }) => {
+    const input = el("input", { type: "text", inputMode: "numeric", maxLength: 10, placeholder: "–" });
+    input.addEventListener("input", debounce(() => {
+      const value = input.value.trim();
+      if (value) state.songbooks[key] = value; else delete state.songbooks[key];
+      if (tab) convert().catch(showError);
+    }, 300));
+    return el("label", {}, label, input);
+  }));
 
   function setStatus(text, cls = "") { $("status").textContent = text; $("status").className = cls; }
 
@@ -104,8 +126,9 @@ export const INDEX_HTML = /* html */ `<!doctype html>
     $("editor").hidden = true;
     try {
       tab = await post("/api/ug", { url: e.target.url.value });
-      Object.assign(state, { simplify: false, sectionTypes: {}, replace: {} });
+      Object.assign(state, { simplify: false, sectionTypes: {}, replace: {}, songbooks: {} });
       $("simplify").checked = false;
+      for (const input of $("books").querySelectorAll("input")) input.value = "";
       await convert({ rebuild: true });
       setStatus(tab.title + " – " + tab.artist + (tab.capo ? " · Capo " + tab.capo : ""));
       $("editor").hidden = false;
@@ -155,7 +178,7 @@ export const INDEX_HTML = /* html */ `<!doctype html>
       remove.addEventListener("change", update);
       return el("div", { className: "chord", title: c.inCatalog ? "" : "Kein Griffbild im Katalog" },
         el("code", { textContent: c.name + (c.inCatalog ? "" : " ⚠") }),
-        el("span", { className: "muted", textContent: "×" + c.count }),
+        el("span", { className: "muted count", textContent: "×" + c.count }),
         input,
         el("label", {}, remove, "weg"));
     }));

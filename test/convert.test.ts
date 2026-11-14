@@ -8,6 +8,7 @@ const catalog = parseCatalog(
     "% Kommentar",
     "\\gtab{Am}{X02210:002310}",
     "\\gtab{C}{X32010:032010} % KONFLIKT",
+    "\\gtab{E}{022100:023100}",
     "\\gtab{G}{320003:210003}",
   ].join("\n"),
 );
@@ -72,6 +73,25 @@ describe("convertTab", () => {
     expect(result.warnings).toEqual([
       "Kein Griffbild im Katalog für: B. In der Datei steht dafür eine TODO-Zeile.",
     ]);
+  });
+
+  it("gibt nur Griffbilder der verwendeten Akkorde aus", () => {
+    const { tex } = convertTab(tab, {}, catalog);
+    expect(tex).not.toContain("\\gtab{E}");
+    expect(tex).not.toMatch(/^%\s+\\gtab/m);
+  });
+
+  it("schreibt gesetzte Liederbuch-Verweise in den Kopf", () => {
+    const { tex } = convertTab(tab, { songbooks: { LLiederbock: "248", LSVE: "17" } }, catalog);
+    expect(tex).toContain(
+      [
+        "\\beginsong{Testlied \\& Co} % Name des Liedes",
+        "  [by={Die Testband}, % Autor des Liedes",
+        "  LSVE={17}, % Liederbuchnummer im alten Swapingo Liederbuch",
+        "  LLiederbock={248} % Seitennummer im Liederbock",
+        "  ]",
+      ].join("\n"),
+    );
   });
 
   it("liefert Abschnitte mit Vorschlag und Akkorde mit Anzahl", () => {

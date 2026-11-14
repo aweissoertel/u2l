@@ -9,7 +9,8 @@ fertige `.tex`-Datei herunterladen.
   sich pro Abschnitt ändern oder weglassen.
 - Akkorde in deutscher Schreibweise (H/B), optional als „Lagerfeuer-Akkorde“ vereinfacht, und
   einzeln im ganzen Lied ersetzbar.
-- Griffbilder aus [chords/catalog.tex](chords/catalog.tex): genau die Akkorde des Lieds sind aktiv.
+- Griffbilder aus [chords/catalog.tex](chords/catalog.tex) – nur für die Akkorde, die im Lied vorkommen.
+- Optionale Verweise auf andere Liederbücher (Swapingo alt, CopacaBeLa, IsarBeLa, Liederbock, Doppelbock).
 
 Das Ausgabeformat steht in [docs/format.md](docs/format.md).
 

@@ -114,3 +114,19 @@ describe("POST /api/convert", () => {
     expect(res.status).toBe(413);
   });
 });
+
+describe("cleanSongbookRefs", () => {
+  it("übernimmt nur bekannte Keys mit harmlosen Werten", async () => {
+    const { cleanSongbookRefs } = await import("../src/latex/songbooks.ts");
+    expect(
+      cleanSongbookRefs({
+        LSVE: " 17 ",
+        LCopacaBeLa: "46a",
+        LIsarBeLa: "\\input{x}",
+        LDoppelbock: "",
+        Fremd: "1",
+        LLiederbock: 248,
+      }),
+    ).toEqual({ LSVE: "17", LCopacaBeLa: "46a" });
+  });
+});

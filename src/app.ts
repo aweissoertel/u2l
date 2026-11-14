@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { bodyLimit } from "hono/body-limit";
 import { convertTab, type ConvertOptions } from "./convert.ts";
+import { cleanSongbookRefs } from "./latex/songbooks.ts";
 import { SECTION_TYPES, type SectionType } from "./song/types.ts";
 import { fetchUgTab } from "./ug/fetch.ts";
 import { UgError, type UgTab } from "./ug/types.ts";
@@ -51,6 +52,8 @@ function parseConvertBody(
     }
     options.replace = replace;
   }
+
+  if (isRecord(raw.songbooks)) options.songbooks = cleanSongbookRefs(raw.songbooks);
 
   return {
     tab: { title, artist, capo: typeof capo === "number" ? capo : null, content },

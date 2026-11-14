@@ -1,6 +1,7 @@
 import { loadCatalog, type CatalogEntry } from "./latex/catalog.ts";
 import { songFilename } from "./latex/filename.ts";
 import { formatSong } from "./latex/format.ts";
+import type { SongbookRefs } from "./latex/songbooks.ts";
 import { countChords, processChords } from "./song/chords.ts";
 import { parseUgContent } from "./song/parse-ug.ts";
 import { guessSectionType } from "./song/sections.ts";
@@ -13,6 +14,8 @@ export interface ConvertOptions {
   sectionTypes?: Record<number, SectionType>;
   /** Manuelles Ersetzen (deutsche Namen); `""` = entfernen. */
   replace?: Record<string, string>;
+  /** Verweise auf andere Liederbücher, z. B. `{ LSVE: "17" }`. */
+  songbooks?: SongbookRefs;
 }
 
 export interface SectionSummary {
@@ -58,7 +61,7 @@ export function convertTab(
 
   const processed = processChords(parsed, { simplify, replace: options.replace ?? {} });
   const { tex, warnings } = formatSong(
-    { title: tab.title, artist: tab.artist, capo: tab.capo },
+    { title: tab.title, artist: tab.artist, capo: tab.capo, songbooks: options.songbooks ?? {} },
     processed,
     sections.map((s) => s.type),
     catalog,
