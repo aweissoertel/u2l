@@ -1,29 +1,15 @@
+import { decodeHTMLAttribute } from "entities";
 import { normalizeUgText } from "./normalize.ts";
 import { UgError, type UgTab } from "./types.ts";
 
 const STORE_RE = /<div[^>]*\bclass="js-store"[^>]*\bdata-content="([^"]*)"/;
 
-const NAMED_ENTITIES: Record<string, string> = {
-  amp: "&",
-  quot: '"',
-  apos: "'",
-  lt: "<",
-  gt: ">",
-  nbsp: " ",
-};
-
-/** Dekodiert HTML-Entities in einem Attributwert. */
+/**
+ * Dekodiert HTML-Entities in einem Attributwert – alle benannten (UG kodiert z. B. Umlaute als
+ * `&auml;`) und numerischen, nach den Regeln des HTML-Standards.
+ */
 export function decodeHtmlAttribute(value: string): string {
-  return value.replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (match, entity: string) => {
-    if (entity[0] === "#") {
-      const code =
-        entity[1] === "x" || entity[1] === "X"
-          ? Number.parseInt(entity.slice(2), 16)
-          : Number.parseInt(entity.slice(1), 10);
-      return Number.isFinite(code) && code <= 0x10ffff ? String.fromCodePoint(code) : match;
-    }
-    return NAMED_ENTITIES[entity.toLowerCase()] ?? match;
-  });
+  return decodeHTMLAttribute(value);
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

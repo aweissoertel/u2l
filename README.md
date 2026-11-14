@@ -5,8 +5,14 @@
 Link zu einem Lied auf Ultimate Guitar einfügen, Abschnitte und Akkorde bei Bedarf anpassen,
 fertige `.tex`-Datei herunterladen.
 
-> Status: Grundgerüst. Der Abruf von Ultimate Guitar funktioniert, die LaTeX-Ausgabe folgt.
-> Das Zielformat steht in [docs/format.md](docs/format.md).
+- Abschnitte werden automatisch als Strophe, Refrain, Bridge oder Instrumental erkannt – und lassen
+  sich pro Abschnitt ändern oder weglassen.
+- Akkorde in deutscher Schreibweise (H/B), optional als „Lagerfeuer-Akkorde“ vereinfacht, und
+  einzeln im ganzen Lied ersetzbar.
+- Griffbilder aus [chords/catalog.tex](chords/catalog.tex) – nur für die Akkorde, die im Lied vorkommen.
+- Optionale Verweise auf andere Liederbücher (Swapingo alt, CopacaBeLa, IsarBeLa, Liederbock, Doppelbock).
+
+Das Ausgabeformat steht in [docs/format.md](docs/format.md).
 
 ## Entwicklung
 

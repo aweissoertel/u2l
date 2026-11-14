@@ -33,9 +33,20 @@ Node führt die `.ts`-Dateien direkt aus (Type Stripping, kein tsx/ts-node). Des
 - `src/ug/` – UG-Abruf: URL prüfen (`url.ts`, nur `tabs.ultimate-guitar.com`), Seite holen
   (`fetch.ts`, Weiterleitungen werden einzeln geprüft), JSON aus `js-store` lesen (`extract.ts`),
   Text bereinigen (`normalize.ts`, u. a. kyrillische Doppelgänger).
-- `src/app.ts` – Hono-App (testbar ohne Server), `src/server.ts` – Start.
-- `test/` – vitest. Testdaten im Repo sind **erfunden**. `test/private/` läuft gegen echte
-  UG-Seiten in `examples/ug/` und wird übersprungen, wenn die fehlen.
+- `src/song/` – Liedmodell (`types.ts`). `parse-ug.ts` zerlegt den UG-Text in Abschnitte und setzt
+  Akkorde spaltengenau in den Text; `chords.ts` macht die Akkord-Verarbeitung (Lagerfeuer,
+  deutsch, Ersetzen, Doppelte); `sections.ts` rät den Abschnitts-Typ.
+- `src/latex/` – `format.ts` erzeugt die .tex-Datei, `escape.ts` maskiert Text, `catalog.ts` liest
+  `chords/catalog.tex`, `filename.ts` baut den Dateinamen.
+- `src/convert.ts` – die ganze Pipeline: UG-Song + Optionen → .tex, Abschnitte, Akkordliste, Warnungen.
+- `src/app.ts` – Hono-App (`/api/ug`, `/api/convert`, testbar ohne Server), `src/web/page.ts` –
+  Weboberfläche (eine Seite, Vanilla JS, UG-Inhalte nur per `textContent`), `src/server.ts` – Start.
+- `test/` – vitest. Testdaten im Repo sind **erfunden**. `test/convert.test.ts` enthält eine
+  vollständig ausgeschriebene Beispielausgabe – die Spezifikation als Test.
+- `test/private/` läuft gegen echte UG-Seiten in `examples/ug/`, die Handfassungen in
+  `examples/reference/` und geprüfte Ausgaben in `examples/expected/`; wird übersprungen, wenn die
+  fehlen. Wackelkontakt muss in Text und Akkorden **exakt** der Handfassung entsprechen.
+  Ändert sich die Ausgabe gewollt: `examples/expected/` neu erzeugen und den Diff prüfen.
 
 ## Build & Deployment
 

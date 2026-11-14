@@ -10,7 +10,9 @@ Punkte mit **OFFEN** sind noch nicht entschieden.
 \songcolumns{1} % auf wie viele Spalten ist das Lied aufgeteilt. Standard: 1
 
 \beginsong{<Titel>} % Name des Liedes
-  [by={<Interpret>} % Autor des Liedes
+  [by={<Interpret>}, % Autor des Liedes
+  LSVE={17}, % Liederbuchnummer im alten Swapingo Liederbuch   ← nur gesetzte Verweise
+  LLiederbock={248} % Seitennummer im Liederbock               ← letzter ohne Komma
   ]
 
 \capo{<n>} % Capo Nummer                       ← nur wenn UG einen Capo angibt
@@ -24,8 +26,10 @@ Punkte mit **OFFEN** sind noch nicht entschieden.
 \endsong
 ```
 
-- Optionale Song-Keys aus der Präambel (`LSVE`, `LCopacaBeLa`, `LIsarBeLa`, `LLiederbock`,
-  `LDoppelbock`) kennt UG nicht. Das Tool lässt sie weg; die Weboberfläche bietet optionale Felder.
+- Verweise auf andere Liederbücher – Song-Keys aus der Präambel, Reihenfolge und Kommentare wie in
+  der Liedvorlage: `LSVE` (Swapingo alt, Lied-Nr.), `LCopacaBeLa` (Seite), `LIsarBeLa` (Lied-Nr.),
+  `LLiederbock` (Seite), `LDoppelbock` (Seite). UG kennt sie nicht; die Weboberfläche hat dafür
+  optionale Felder. Nur ausgefüllte Verweise landen in der Datei, keine `???`-Platzhalter.
 - Dateiname: Titel in Kleinbuchstaben, `snake_case`, Umlaute als `ae/oe/ue/ss`
   (z. B. `flinke_haende.tex`).
 - Kodierung UTF-8, Zeilenenden LF.
@@ -71,24 +75,25 @@ Stellen weg (der Text bleibt).
 3. deutsche Schreibweise (`B` → `H`, `Bb` → `B`)
 4. manuelles Ersetzen
 5. doppelte Akkorde in einer Zeile zusammenfassen (nur wenn 2. aktiv)
-6. Griffbilder auswählen – es werden genau die Akkorde aktiviert, die am Ende im Lied stehen
+6. Griffbilder auswählen – genau die Akkorde, die am Ende im Lied stehen
 
 ## 3. Griffbilder (`\gtab`)
 
 - Es gibt einen zentralen **Griffbild-Katalog** im Repo: [`chords/catalog.tex`](../chords/catalog.tex),
   eine Zeile pro Akkord in fester Reihenfolge.
-- Pro Lied wird der **ganze Katalog** ausgegeben; Akkorde, die im Lied vorkommen, sind aktiv, alle
-  anderen auskommentiert:
+- Pro Lied werden **nur die Griffbilder der Akkorde ausgegeben, die im Lied vorkommen** – in
+  Katalog-Reihenfolge, ohne auskommentierte Zeilen für die übrigen:
 
   ```tex
     \gtab{Am}{X02210:002310}\ \ \ \ \ % Hiermit kann man Tabs der Akkorde einfügen
-  %  \gtab{A7}{X02020:001020}\ \ \ \ \ % Hiermit kann man Tabs der Akkorde einfügen
+    \gtab{Dm}{XX0231:000231}\ \ \ \ \ % Hiermit kann man Tabs der Akkorde einfügen
   ```
 
 - Kommt ein Akkord im Lied vor, der nicht im Katalog steht, **rät** das Tool ein Standard-Griffbild
   aus einer Akkord-Datenbank, schreibt es aktiv mit dem Kommentar `% GERATEN – bitte prüfen` ans Ende
   des Blocks und gibt eine **Warnung** aus. Gibt es auch dort nichts, kommt eine Zeile
   `% TODO \gtab{Xyz}{…}`. Bestätigte Griffbilder werden in den Katalog übernommen.
+  _Stand: Das Raten ist noch nicht umgesetzt – bisher kommt immer die TODO-Zeile plus Warnung._
 - Der Katalog wurde aus den bestehenden Liedern erstellt. Widersprüche und verdächtige Einträge sind
   dort mit `KONFLIKT` bzw. `PRÜFEN` markiert und müssen einmal geklärt werden.
 - Der Kommentar wird sauber als „einfügen“ geschrieben (in 61 Dateien steht er doppelt kodiert als
@@ -109,7 +114,11 @@ Abgleich mit den Handfassungen: In Abenteuerland und Wackelkontakt treffen diese
 letzten zwei Bridge-Zeilen als eigener Refrain, Zeilen neu umbrochen, Anführungszeichen ergänzt).
 
 - Der Nutzer kann den Typ jedes Abschnitts vor dem Export ändern (Auswahlliste pro Abschnitt in
-  der Weboberfläche).
+  der Weboberfläche) oder den Abschnitt **weglassen**.
+- „Instrumental“ und „Strophe ungezählt“ werden gleich gesetzt (`\beginverse*`); reine
+  Akkordzeilen werden in **jedem** Abschnitt als `{\nolyrics …}` ausgegeben.
+- Liegt ein Akkord bei UG auf einem Leerzeichen, rückt er vor das nächste Wort
+  (`Du \[Dbm]hören` statt `Du\[Dbm] hören`).
 - Jede Textzeile endet mit `\\` (auch die letzte eines Abschnitts).
 - Kein Einrücken im Abschnitt. Zwischen Abschnitten eine Leerzeile.
 - Wiederholte Refrains werden **vollständig** ausgeschrieben (kein `^`, keine Abkürzung).

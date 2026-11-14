@@ -24,6 +24,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
 COPY package.json ./
+COPY chords/catalog.tex ./chords/catalog.tex
 
 USER node
 EXPOSE 3000
