@@ -37,6 +37,16 @@ Node führt die `.ts`-Dateien direkt aus (Type Stripping, kein tsx/ts-node). Des
 - `test/` – vitest. Testdaten im Repo sind **erfunden**. `test/private/` läuft gegen echte
   UG-Seiten in `examples/ug/` und wird übersprungen, wenn die fehlen.
 
+## Build & Deployment
+
+- `Dockerfile`: mehrstufig, `node:<version>-alpine`, nur `dist/` + Laufzeit-Abhängigkeiten, läuft als
+  `node`. `.dockerignore` ist eine Whitelist – neue Dateien, die ins Image müssen, dort freigeben.
+- `.github/workflows/ci.yml`: Tests bei jedem PR/Push; Job `image` baut bei PRs/anderen Branches
+  ohne Push, Job `publish` pusht bei Push auf `main` nach Docker Hub (`latest`, `sha-…`).
+  Docker-Hub-Zugang nur über die Environment `dockerhub` (auf `main` beschränkt) – Secrets nie in
+  andere Jobs ziehen. Actions sind per Commit-SHA gepinnt (Dependabot aktualisiert sie).
+- Node-Version an drei Stellen gleich halten: `.nvmrc`, `Dockerfile`, `@types/node`.
+
 ## Regeln
 
 - **Das Repo ist öffentlich.** Echte Liederbuch-Dateien (Präambel, `main.tex`, Lieder) und echte
