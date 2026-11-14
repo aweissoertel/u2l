@@ -40,7 +40,7 @@ Node führt die `.ts`-Dateien direkt aus (Type Stripping, kein tsx/ts-node). Des
   `chords/catalog.tex`, `filename.ts` baut den Dateinamen.
 - `src/convert.ts` – die ganze Pipeline: UG-Song + Optionen → .tex, Abschnitte, Akkordliste, Warnungen.
 - `src/app.ts` – Hono-App (`/api/ug`, `/api/convert`, testbar ohne Server), `src/web/page.ts` –
-  Weboberfläche (eine Seite, Vanilla JS, UG-Inhalte nur per `textContent`), `src/server.ts` – Start.
+  Weboberfläche (eine Seite, Vanilla JS, keine externen Ressourcen, UG-Inhalte nur per `textContent`; als `String.raw` – im Client-Skript keine Backticks und kein `${…}`). Animationen: Der Schalter „Effekte“ im Footer setzt `html.calm` – neue Animationen/Übergänge dort mit abschalten, und Inhalte nie nur über eine Animation sichtbar machen (sonst bleiben sie im statischen Modus unsichtbar). Keine `filter`/`backdrop-filter` über bewegtem Hintergrund (Dauerlast für die Grafikkarte), `src/server.ts` – Start.
 - `test/` – vitest. Testdaten im Repo sind **erfunden**. `test/convert.test.ts` enthält eine
   vollständig ausgeschriebene Beispielausgabe – die Spezifikation als Test.
 - `test/private/` läuft gegen echte UG-Seiten in `examples/ug/`, die Handfassungen in
