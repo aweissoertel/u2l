@@ -24,6 +24,7 @@ export const INDEX_HTML = String.raw`<!doctype html>
     --bg-2: #11111c;
     --surface: rgba(255, 255, 255, 0.045);
     --surface-2: rgba(255, 255, 255, 0.075);
+    --panel: rgba(19, 19, 31, 0.8);
     --surface-hover: rgba(255, 255, 255, 0.1);
     --border: rgba(255, 255, 255, 0.09);
     --border-strong: rgba(255, 255, 255, 0.18);
@@ -54,6 +55,7 @@ export const INDEX_HTML = String.raw`<!doctype html>
       --bg-2: #ffffff;
       --surface: rgba(255, 255, 255, 0.72);
       --surface-2: rgba(255, 255, 255, 0.9);
+      --panel: rgba(255, 255, 255, 0.84);
       --surface-hover: #ffffff;
       --border: rgba(20, 16, 50, 0.09);
       --border-strong: rgba(20, 16, 50, 0.18);
@@ -87,17 +89,19 @@ export const INDEX_HTML = String.raw`<!doctype html>
   :focus-visible { outline: 2px solid var(--pink); outline-offset: 2px; }
 
   /* ---------- Bühnenlicht im Hintergrund ---------- */
-  .aurora { position: fixed; inset: -20vmax; z-index: -2; pointer-events: none; filter: blur(70px) saturate(140%); opacity: .55; }
+  /* Performance: kein filter/blur und kein mix-blend-mode – die Weichheit steckt in den Verläufen,
+     bewegt wird nur per transform (Compositor, kein Neuzeichnen pro Frame). */
+  .aurora { position: fixed; inset: -20vmax; z-index: -2; pointer-events: none; opacity: .6; contain: strict; }
   /* .blob folgt dem Mauszeiger (per JS: --mx/--my/--ms), der span darin wandert per CSS. */
-  .aurora .blob { position: absolute; width: 55vmax; height: 55vmax; mix-blend-mode: screen; transform: translate3d(var(--mx, 0px), var(--my, 0px), 0) scale(var(--ms, 1)); will-change: transform; }
-  .aurora .blob span { position: absolute; inset: 0; border-radius: 50%; animation: drift 26s var(--ease) infinite alternate; }
+  .aurora .blob { position: absolute; width: 55vmax; height: 55vmax; transform: translate3d(var(--mx, 0px), var(--my, 0px), 0) scale(var(--ms, 1)); will-change: transform; }
+  .aurora .blob span { position: absolute; inset: 0; border-radius: 50%; will-change: transform; animation: drift 26s var(--ease) infinite alternate; }
   .aurora .blob:nth-child(1) { left: 0; top: 0; }
-  .aurora .blob:nth-child(1) span { background: radial-gradient(circle, var(--violet), transparent 62%); }
+  .aurora .blob:nth-child(1) span { background: radial-gradient(circle closest-side, color-mix(in oklab, var(--violet) 90%, transparent), color-mix(in oklab, var(--violet) 35%, transparent) 45%, transparent); }
   .aurora .blob:nth-child(2) { right: 0; top: 10%; }
-  .aurora .blob:nth-child(2) span { background: radial-gradient(circle, var(--pink), transparent 62%); animation-delay: -9s; animation-duration: 32s; }
+  .aurora .blob:nth-child(2) span { background: radial-gradient(circle closest-side, color-mix(in oklab, var(--pink) 85%, transparent), color-mix(in oklab, var(--pink) 30%, transparent) 45%, transparent); animation-delay: -9s; animation-duration: 32s; }
   .aurora .blob:nth-child(3) { left: 25%; bottom: 0; opacity: .7; }
-  .aurora .blob:nth-child(3) span { background: radial-gradient(circle, var(--amber), transparent 60%); animation-delay: -17s; }
-  @media (prefers-color-scheme: light) { .aurora { opacity: .28; } .aurora .blob { mix-blend-mode: multiply; } }
+  .aurora .blob:nth-child(3) span { background: radial-gradient(circle closest-side, color-mix(in oklab, var(--amber) 80%, transparent), color-mix(in oklab, var(--amber) 28%, transparent) 45%, transparent); animation-delay: -17s; }
+  @media (prefers-color-scheme: light) { .aurora { opacity: .3; } }
   @keyframes drift {
     0% { transform: translate3d(0, 0, 0) scale(1); }
     50% { transform: translate3d(8vmax, 6vmax, 0) scale(1.15); }
@@ -111,18 +115,18 @@ export const INDEX_HTML = String.raw`<!doctype html>
   /* ---------- Kopf ---------- */
   .hero { padding: clamp(2.5rem, 8vh, 6rem) 0 2rem; text-align: center; transition: padding .6s var(--ease); }
   body.has-song .hero { padding-top: 1.5rem; padding-bottom: 1.25rem; }
-  .brand { display: inline-flex; align-items: center; gap: .55rem; padding: .35rem .8rem .35rem .4rem; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); backdrop-filter: blur(12px); font-weight: 600; font-size: .85rem; color: var(--muted); }
+  .brand { display: inline-flex; align-items: center; gap: .55rem; padding: .35rem .8rem .35rem .4rem; border: 1px solid var(--border); border-radius: 999px; background: var(--panel); font-weight: 600; font-size: .85rem; color: var(--muted); }
   .brand svg { width: 22px; height: 22px; }
   .brand b { color: var(--text); letter-spacing: -.01em; }
   h1 { font-size: clamp(2.2rem, 6vw, 4.2rem); line-height: 1.02; letter-spacing: -.045em; font-weight: 750; margin: 1.1rem 0 .8rem; transition: font-size .6s var(--ease), margin .6s var(--ease); }
   body.has-song h1 { font-size: clamp(1.6rem, 3vw, 2.1rem); margin: .8rem 0 .4rem; }
-  .grad { background: var(--grad); background-size: 200% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: shimmer 8s ease-in-out infinite alternate; }
+  .grad { background: var(--grad); background-size: 200% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: shimmer 2.6s ease-in-out .4s 2 alternate; }
   @keyframes shimmer { to { background-position: 100% 0; } }
   .lead { color: var(--muted); max-width: 36rem; margin: 0 auto 2rem; font-size: 1.05rem; transition: opacity .4s, margin .6s var(--ease); }
   body.has-song .lead { opacity: 0; height: 0; margin: 0; overflow: hidden; }
 
   /* ---------- Suchfeld ---------- */
-  .search { position: relative; max-width: 46rem; margin: 0 auto; display: flex; align-items: center; gap: .5rem; padding: .45rem; border-radius: 20px; background: var(--surface-2); border: 1px solid var(--border); box-shadow: var(--shadow); backdrop-filter: blur(20px); transition: border-color .3s, box-shadow .3s; }
+  .search { position: relative; max-width: 46rem; margin: 0 auto; display: flex; align-items: center; gap: .5rem; padding: .45rem; border-radius: 20px; background: var(--panel); border: 1px solid var(--border); box-shadow: var(--shadow); transition: border-color .3s, box-shadow .3s; }
   .search::before { content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1px; background: var(--grad); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; opacity: 0; transition: opacity .3s; pointer-events: none; }
   .search:focus-within::before { opacity: 1; }
   .search:focus-within { box-shadow: var(--shadow), 0 0 0 6px color-mix(in oklab, var(--pink) 14%, transparent), 0 0 60px -10px color-mix(in oklab, var(--violet) 60%, transparent); }
@@ -167,7 +171,7 @@ export const INDEX_HTML = String.raw`<!doctype html>
   @media (max-width: 980px) { .cols { grid-template-columns: 1fr; } }
   .stack { display: grid; gap: 1.25rem; min-width: 0; }
 
-  .panel { position: relative; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); backdrop-filter: blur(22px) saturate(150%); -webkit-backdrop-filter: blur(22px) saturate(150%); }
+  .panel { position: relative; background: linear-gradient(180deg, rgba(255, 255, 255, .025), transparent 40%), var(--panel); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); }
   .panel-body { padding: 1.25rem; }
   .panel h2 { display: flex; align-items: center; gap: .65rem; margin: 0 0 1rem; font-size: 1.02rem; letter-spacing: -.01em; }
   .panel h2 .num { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 8px; font-size: .8rem; font-weight: 700; color: #fff; background: var(--grad); }
@@ -265,7 +269,7 @@ export const INDEX_HTML = String.raw`<!doctype html>
   .t-brace { color: var(--tex-brace); }
 
   /* ---------- Toast ---------- */
-  .toast { position: fixed; left: 50%; bottom: 1.5rem; translate: -50% 0; display: flex; align-items: center; gap: .55rem; padding: .7rem 1.05rem; border-radius: 14px; font-weight: 600; font-size: .92rem; color: var(--text); background: var(--surface-2); border: 1px solid var(--border-strong); box-shadow: 0 20px 50px -15px rgba(0, 0, 0, .5); backdrop-filter: blur(20px); opacity: 0; transform: translateY(16px) scale(.96); transition: opacity .35s var(--ease), transform .45s var(--ease); pointer-events: none; z-index: 10; }
+  .toast { position: fixed; left: 50%; bottom: 1.5rem; translate: -50% 0; display: flex; align-items: center; gap: .55rem; padding: .7rem 1.05rem; border-radius: 14px; font-weight: 600; font-size: .92rem; color: var(--text); background: var(--surface-2); border: 1px solid var(--border-strong); box-shadow: 0 20px 50px -15px rgba(0, 0, 0, .5); opacity: 0; transform: translateY(16px) scale(.96); transition: opacity .35s var(--ease), transform .45s var(--ease); pointer-events: none; z-index: 10; }
   .toast.on { opacity: 1; transform: none; }
   .toast::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--green); box-shadow: 0 0 12px var(--green); }
 
