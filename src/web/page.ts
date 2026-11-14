@@ -273,7 +273,7 @@ export const INDEX_HTML = String.raw`<!doctype html>
   .toast.on { opacity: 1; transform: none; }
   .toast::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--green); box-shadow: 0 0 12px var(--green); }
 
-  footer { margin-top: auto; text-align: center; color: var(--faint); font-size: .8rem; padding: 2rem 0; }
+  footer { margin-top: auto; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; text-align: center; color: var(--faint); font-size: .8rem; padding: 2rem 0; }
 
   @media (max-width: 560px) {
     .sec { grid-template-columns: 1fr; }
@@ -287,11 +287,36 @@ export const INDEX_HTML = String.raw`<!doctype html>
     .preview-head .actions .btn { flex: 1; }
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
-    .aurora .blob span { animation: none; }
-  }
+  /* Effekte aus (Schalter im Footer, Standard bei „Bewegung reduzieren“): Animationen springen
+     sofort in ihren Endzustand, Lichter stehen still – die Seite wird einmal gezeichnet und
+     ändert sich nur noch bei Eingaben. */
+  html.calm *, html.calm *::before, html.calm *::after { animation: none !important; transition: none !important; }
+  /* Was sonst erst per Animation einblendet, ist sofort sichtbar (:where hält die Spezifität
+     niedrig, damit z. B. „weggelassene“ Abschnitte ihre eigene Deckkraft behalten). */
+  html.calm :where(.reveal, .sec, .chord, .warnings li) { opacity: 1; transform: none; }
+  html.calm .aurora .blob, html.calm .aurora .blob span { transform: none !important; will-change: auto; }
+  html.calm .btn .spinner { display: none !important; }
+
+  .fx { display: inline-flex; align-items: center; gap: .55rem; margin-left: 1rem; padding: .3rem .7rem .3rem .4rem; border: 1px solid var(--border); border-radius: 999px; background: var(--panel); color: var(--muted); font-weight: 600; cursor: pointer; user-select: none; }
+  .fx:hover { border-color: var(--border-strong); color: var(--text); }
+  .fx input { position: absolute; opacity: 0; pointer-events: none; }
+  .fx .track { position: relative; width: 30px; height: 18px; border-radius: 999px; background: var(--surface-hover); border: 1px solid var(--border-strong); transition: background .25s; }
+  .fx .track::after { content: ""; position: absolute; top: 1px; left: 1px; width: 14px; height: 14px; border-radius: 50%; background: #fff; transition: transform .25s var(--ease); }
+  .fx input:checked + .track { background: var(--grad); border-color: transparent; }
+  .fx input:checked + .track::after { transform: translateX(12px); }
+  .fx input:focus-visible + .track { outline: 2px solid var(--pink); outline-offset: 2px; }
+  @media (max-width: 560px) { .fx { margin: .75rem 0 0; } }
 </style>
+<script>
+  // Vor dem ersten Zeichnen: gespeicherte Wahl, sonst Systemeinstellung „Bewegung reduzieren“.
+  try {
+    var fx = localStorage.getItem("u2l-effects");
+    var calm = fx ? fx === "off" : matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (calm) document.documentElement.classList.add("calm");
+  } catch (e) {
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) document.documentElement.classList.add("calm");
+  }
+</script>
 </head>
 <body>
 <div class="aurora" id="aurora" aria-hidden="true"><div class="blob"><span></span></div><div class="blob"><span></span></div><div class="blob"><span></span></div></div>
@@ -372,7 +397,14 @@ export const INDEX_HTML = String.raw`<!doctype html>
   </div>
 </main>
 
-<footer class="wrap">u2l · für das songs-Paket · Akkorde in deutscher Schreibweise</footer>
+<footer class="wrap">
+  <span>u2l · für das songs-Paket · Akkorde in deutscher Schreibweise</span>
+  <label class="fx" title="Aus: keine Animationen, Seite bleibt ruhig und spart Akku">
+    <input type="checkbox" id="fx" checked>
+    <span class="track" aria-hidden="true"></span>
+    Effekte
+  </label>
+</footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script type="module">
@@ -590,9 +622,10 @@ export const INDEX_HTML = String.raw`<!doctype html>
 
   /* ---------- Lichter folgen dem Mauszeiger ---------- */
   // Jede Lichtquelle wird vom Zeiger angezogen – je näher er ist, desto stärker (weich gefedert).
-  // Nur mit Maus/Stift, nicht bei „Bewegung reduzieren“; die Schleife schläft, wenn alles ruht.
-  (() => {
-    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  // Nur mit Maus/Stift und eingeschalteten Effekten; die Schleife schläft, wenn alles ruht.
+  const root = document.documentElement;
+  const calm = () => root.classList.contains("calm");
+  const lights = (() => {
     const blobs = [...document.querySelectorAll("#aurora .blob")].map((node) => ({ node, x: 0, y: 0, s: 1, tx: 0, ty: 0, ts: 1 }));
     const pointer = { x: 0, y: 0, active: false };
     let frame = 0;
@@ -629,13 +662,36 @@ export const INDEX_HTML = String.raw`<!doctype html>
     const wake = () => { aim(); if (!frame) frame = requestAnimationFrame(tick); };
 
     addEventListener("pointermove", (e) => {
-      if (e.pointerType === "touch") return;
+      if (e.pointerType === "touch" || calm()) return;
       pointer.x = e.clientX; pointer.y = e.clientY; pointer.active = true;
       wake();
     }, { passive: true });
-    document.documentElement.addEventListener("pointerleave", () => { pointer.active = false; wake(); });
-    addEventListener("blur", () => { pointer.active = false; wake(); });
+    root.addEventListener("pointerleave", () => { pointer.active = false; if (!calm()) wake(); });
+    addEventListener("blur", () => { pointer.active = false; if (!calm()) wake(); });
+
+    // Sofort zurück auf Ausgangslage, ohne Animation.
+    const reset = () => {
+      cancelAnimationFrame(frame);
+      frame = 0;
+      pointer.active = false;
+      for (const b of blobs) {
+        Object.assign(b, { x: 0, y: 0, s: 1, tx: 0, ty: 0, ts: 1 });
+        b.node.style.removeProperty("--mx");
+        b.node.style.removeProperty("--my");
+        b.node.style.removeProperty("--ms");
+      }
+    };
+    return { reset };
   })();
+
+  /* ---------- Schalter „Effekte“ ---------- */
+  const fxToggle = $("fx");
+  fxToggle.checked = !calm();
+  fxToggle.addEventListener("change", () => {
+    root.classList.toggle("calm", !fxToggle.checked);
+    if (!fxToggle.checked) lights.reset();
+    try { localStorage.setItem("u2l-effects", fxToggle.checked ? "on" : "off"); } catch {}
+  });
 
   function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
 </script>
