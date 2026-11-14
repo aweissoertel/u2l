@@ -1,0 +1,8 @@
+# Private Liederbuch-Dateien (Präambel, main.tex, Lieder) und UG-Testdaten –
+# das Repo ist öffentlich, diese Dateien bleiben lokal.
+examples/
+
+# Node / Build
+node_modules/
+dist/
+.DS_Store
