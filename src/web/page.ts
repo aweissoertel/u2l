@@ -88,11 +88,16 @@ export const INDEX_HTML = String.raw`<!doctype html>
 
   /* ---------- Bühnenlicht im Hintergrund ---------- */
   .aurora { position: fixed; inset: -20vmax; z-index: -2; pointer-events: none; filter: blur(70px) saturate(140%); opacity: .55; }
-  .aurora span { position: absolute; width: 55vmax; height: 55vmax; border-radius: 50%; mix-blend-mode: screen; animation: drift 26s var(--ease) infinite alternate; }
-  .aurora span:nth-child(1) { left: 0; top: 0; background: radial-gradient(circle, var(--violet), transparent 62%); }
-  .aurora span:nth-child(2) { right: 0; top: 10%; background: radial-gradient(circle, var(--pink), transparent 62%); animation-delay: -9s; animation-duration: 32s; }
-  .aurora span:nth-child(3) { left: 25%; bottom: 0; background: radial-gradient(circle, var(--amber), transparent 60%); animation-delay: -17s; opacity: .7; }
-  @media (prefers-color-scheme: light) { .aurora { opacity: .28; } .aurora span { mix-blend-mode: multiply; } }
+  /* .blob folgt dem Mauszeiger (per JS: --mx/--my/--ms), der span darin wandert per CSS. */
+  .aurora .blob { position: absolute; width: 55vmax; height: 55vmax; mix-blend-mode: screen; transform: translate3d(var(--mx, 0px), var(--my, 0px), 0) scale(var(--ms, 1)); will-change: transform; }
+  .aurora .blob span { position: absolute; inset: 0; border-radius: 50%; animation: drift 26s var(--ease) infinite alternate; }
+  .aurora .blob:nth-child(1) { left: 0; top: 0; }
+  .aurora .blob:nth-child(1) span { background: radial-gradient(circle, var(--violet), transparent 62%); }
+  .aurora .blob:nth-child(2) { right: 0; top: 10%; }
+  .aurora .blob:nth-child(2) span { background: radial-gradient(circle, var(--pink), transparent 62%); animation-delay: -9s; animation-duration: 32s; }
+  .aurora .blob:nth-child(3) { left: 25%; bottom: 0; opacity: .7; }
+  .aurora .blob:nth-child(3) span { background: radial-gradient(circle, var(--amber), transparent 60%); animation-delay: -17s; }
+  @media (prefers-color-scheme: light) { .aurora { opacity: .28; } .aurora .blob { mix-blend-mode: multiply; } }
   @keyframes drift {
     0% { transform: translate3d(0, 0, 0) scale(1); }
     50% { transform: translate3d(8vmax, 6vmax, 0) scale(1.15); }
@@ -280,12 +285,12 @@ export const INDEX_HTML = String.raw`<!doctype html>
 
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
-    .aurora span { animation: none; }
+    .aurora .blob span { animation: none; }
   }
 </style>
 </head>
 <body>
-<div class="aurora" aria-hidden="true"><span></span><span></span><span></span></div>
+<div class="aurora" id="aurora" aria-hidden="true"><div class="blob"><span></span></div><div class="blob"><span></span></div><div class="blob"><span></span></div></div>
 <div class="grain" aria-hidden="true"></div>
 
 <header class="hero wrap">
@@ -578,6 +583,55 @@ export const INDEX_HTML = String.raw`<!doctype html>
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => t.classList.remove("on"), 2200);
   }
+
+  /* ---------- Lichter folgen dem Mauszeiger ---------- */
+  // Jede Lichtquelle wird vom Zeiger angezogen – je näher er ist, desto stärker (weich gefedert).
+  // Nur mit Maus/Stift, nicht bei „Bewegung reduzieren“; die Schleife schläft, wenn alles ruht.
+  (() => {
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const blobs = [...document.querySelectorAll("#aurora .blob")].map((node) => ({ node, x: 0, y: 0, s: 1, tx: 0, ty: 0, ts: 1 }));
+    const pointer = { x: 0, y: 0, active: false };
+    let frame = 0;
+
+    const aim = () => {
+      const reach = Math.max(innerWidth, innerHeight) * 0.9;
+      for (const b of blobs) {
+        if (!pointer.active) { b.tx = 0; b.ty = 0; b.ts = 1; continue; }
+        const r = b.node.getBoundingClientRect();
+        const cx = r.left + r.width / 2 - b.x;
+        const cy = r.top + r.height / 2 - b.y;
+        const dx = pointer.x - cx, dy = pointer.y - cy;
+        const pull = Math.max(0, 1 - Math.hypot(dx, dy) / reach);
+        const ease = pull * pull * (3 - 2 * pull); // smoothstep
+        b.tx = dx * 0.55 * ease;
+        b.ty = dy * 0.55 * ease;
+        b.ts = 1 + 0.18 * ease;
+      }
+    };
+
+    const tick = () => {
+      let moving = false;
+      for (const b of blobs) {
+        b.x += (b.tx - b.x) * 0.045;
+        b.y += (b.ty - b.y) * 0.045;
+        b.s += (b.ts - b.s) * 0.045;
+        if (Math.abs(b.tx - b.x) > 0.3 || Math.abs(b.ty - b.y) > 0.3 || Math.abs(b.ts - b.s) > 0.001) moving = true;
+        b.node.style.setProperty("--mx", b.x.toFixed(1) + "px");
+        b.node.style.setProperty("--my", b.y.toFixed(1) + "px");
+        b.node.style.setProperty("--ms", b.s.toFixed(4));
+      }
+      frame = moving ? requestAnimationFrame(tick) : 0;
+    };
+    const wake = () => { aim(); if (!frame) frame = requestAnimationFrame(tick); };
+
+    addEventListener("pointermove", (e) => {
+      if (e.pointerType === "touch") return;
+      pointer.x = e.clientX; pointer.y = e.clientY; pointer.active = true;
+      wake();
+    }, { passive: true });
+    document.documentElement.addEventListener("pointerleave", () => { pointer.active = false; wake(); });
+    addEventListener("blur", () => { pointer.active = false; wake(); });
+  })();
 
   function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
 </script>
