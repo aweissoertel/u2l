@@ -45,15 +45,15 @@ Punkte mit **OFFEN** sind noch nicht entschieden.
 
 Standardmäßig aus. Wenn an, gelten diese Regeln (abgeleitet aus Abenteuerland, Handfassung vs. UG):
 
-| Regel | Beispiel |
-| --- | --- |
-| Slash-Akkorde: Bass weglassen | `Ab/Gb` → `Ab`, `F/A` → `F`, `Db/F` → `Db` |
-| `maj7` weglassen | `Dbmaj7` → `Db` |
-| `mmaj7` → Moll | `Dbmmaj7` → `Dbm` |
-| Powerchord `5` → Dur | `Db5` → `Db` |
-| `sus2`/`sus4` weglassen | `Ebsus4` → `Eb` |
-| Gleiche Akkorde direkt hintereinander in einer Zeile → einer | `G … G … G` → `G` |
-| bleibt erhalten | `7`, `m7`, `m`, `add9` |
+| Regel                                                        | Beispiel                                   |
+| ------------------------------------------------------------ | ------------------------------------------ |
+| Slash-Akkorde: Bass weglassen                                | `Ab/Gb` → `Ab`, `F/A` → `F`, `Db/F` → `Db` |
+| `maj7` weglassen                                             | `Dbmaj7` → `Db`                            |
+| `mmaj7` → Moll                                               | `Dbmmaj7` → `Dbm`                          |
+| Powerchord `5` → Dur                                         | `Db5` → `Db`                               |
+| `sus2`/`sus4` weglassen                                      | `Ebsus4` → `Eb`                            |
+| Gleiche Akkorde direkt hintereinander in einer Zeile → einer | `G … G … G` → `G`                          |
+| bleibt erhalten                                              | `7`, `m7`, `m`, `add9`                     |
 
 Mit allen Regeln ergibt UG-Abenteuerland genau die Akkorde der Handfassung.
 
@@ -84,6 +84,7 @@ Stellen weg (der Text bleibt).
     \gtab{Am}{X02210:002310}\ \ \ \ \ % Hiermit kann man Tabs der Akkorde einfügen
   %  \gtab{A7}{X02020:001020}\ \ \ \ \ % Hiermit kann man Tabs der Akkorde einfügen
   ```
+
 - Kommt ein Akkord im Lied vor, der nicht im Katalog steht, **rät** das Tool ein Standard-Griffbild
   aus einer Akkord-Datenbank, schreibt es aktiv mit dem Kommentar `% GERATEN – bitte prüfen` ans Ende
   des Blocks und gibt eine **Warnung** aus. Gibt es auch dort nichts, kommt eine Zeile
@@ -95,13 +96,13 @@ Stellen weg (der Text bleibt).
 
 ## 4. Abschnitte
 
-| Typ | LaTeX | Wann (Vorschlag des Tools) |
-| --- | --- | --- |
-| Strophe | `\beginverse … \endverse` | UG `[Verse]`, `[Verse 1]`, `[Strophe]`, … |
-| Strophe ungezählt | `\beginverse* … \endverse` | `[Outro]`/`[Intro]`/unbekannt **mit** Text |
-| Instrumental | `\beginverse*` + `{\nolyrics …}` | Abschnitte **nur aus Akkorden** – egal wie sie heißen (`[Intro]`, `[Solo]`, `[Interlude]`, `[Instrumental]`, `[Outro]`) |
-| Bridge | `\beginbridge … \endbridge` | `[Bridge]`, `[Pre-Chorus]`, `[Build]`, `[Drop]` |
-| Refrain | `\beginchorus … \endchorus` | `[Chorus]`, `[Refrain]`, `[Post-Chorus]` |
+| Typ               | LaTeX                            | Wann (Vorschlag des Tools)                                                                                              |
+| ----------------- | -------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Strophe           | `\beginverse … \endverse`        | UG `[Verse]`, `[Verse 1]`, `[Strophe]`, …                                                                               |
+| Strophe ungezählt | `\beginverse* … \endverse`       | `[Outro]`/`[Intro]`/unbekannt **mit** Text                                                                              |
+| Instrumental      | `\beginverse*` + `{\nolyrics …}` | Abschnitte **nur aus Akkorden** – egal wie sie heißen (`[Intro]`, `[Solo]`, `[Interlude]`, `[Instrumental]`, `[Outro]`) |
+| Bridge            | `\beginbridge … \endbridge`      | `[Bridge]`, `[Pre-Chorus]`, `[Build]`, `[Drop]`                                                                         |
+| Refrain           | `\beginchorus … \endchorus`      | `[Chorus]`, `[Refrain]`, `[Post-Chorus]`                                                                                |
 
 Abgleich mit den Handfassungen: In Abenteuerland und Wackelkontakt treffen diese Regeln alle
 14 Abschnitte richtig. Nicht automatisierbar war nur Handarbeit am Inhalt (Abenteuerland: die
