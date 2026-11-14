@@ -1,0 +1,8 @@
+# Whitelist: Nur was der Build braucht, landet im Docker-Kontext.
+# So können private Dateien (examples/) nie versehentlich ins Image geraten.
+*
+!package.json
+!package-lock.json
+!tsconfig.json
+!tsconfig.build.json
+!src/
