@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { normalizeUgText } from "../../src/ug/normalize.js";
+import { normalizeUgText } from "../../src/ug/normalize.ts";
 
 describe("normalizeUgText", () => {
   it("ersetzt kyrillische Doppelgänger in lateinischen Wörtern", () => {

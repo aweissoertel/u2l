@@ -11,13 +11,22 @@ Ausgabeformat zuerst dort eintragen, dann umsetzen. Griffbilder: [`chords/catalo
 ## Befehle
 
 ```bash
-npm install          # Node >= 22 (lokal empfohlen: 22.12+ oder 24)
+nvm use             # Node 26 (siehe .nvmrc), mindestens 24
+npm install
 npm test             # vitest
-npm run typecheck
+npm run typecheck    # TypeScript 7 (tsc)
 npm run format       # prettier
-npm run dev          # Server mit Reload auf http://localhost:3000
+npm run dev          # node --watch src/server.ts → http://localhost:3000
 npm run build && npm start
 ```
+
+Node führt die `.ts`-Dateien direkt aus (Type Stripping, kein tsx/ts-node). Deshalb:
+
+- Relative Imports immer mit `.ts`-Endung (`import { x } from "./foo.ts"`); `tsc` schreibt sie
+  beim Build zu `.js` um.
+- Nur löschbare TS-Syntax (`erasableSyntaxOnly`): keine `enum`s, keine `namespace`s, keine
+  Parameter-Properties im Konstruktor.
+- Reine Typ-Imports als `import type` bzw. `type` im Import (`verbatimModuleSyntax`).
 
 ## Aufbau
 

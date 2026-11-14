@@ -1,6 +1,6 @@
-import { extractUgTab } from "./extract.js";
-import { UgError, type UgTab } from "./types.js";
-import { isAllowedUgUrl, parseUgUrl } from "./url.js";
+import { extractUgTab } from "./extract.ts";
+import { UgError, type UgTab } from "./types.ts";
+import { isAllowedUgUrl, parseUgUrl } from "./url.ts";
 
 export interface FetchUgOptions {
   /** Austauschbar für Tests. */

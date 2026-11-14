@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import { createApp } from "../src/app.js";
-import { UgError, type UgTab } from "../src/ug/types.js";
+import { createApp } from "../src/app.ts";
+import { UgError, type UgTab } from "../src/ug/types.ts";
 
 const TAB: UgTab = {
   url: "https://tabs.ultimate-guitar.com/tab/test/testlied-chords-1",

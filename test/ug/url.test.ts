@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { parseUgUrl } from "../../src/ug/url.js";
-import { UgError } from "../../src/ug/types.js";
+import { parseUgUrl } from "../../src/ug/url.ts";
+import { UgError } from "../../src/ug/types.ts";
 
 describe("parseUgUrl", () => {
   it("akzeptiert Tab-Links und entfernt Query und Anker", () => {

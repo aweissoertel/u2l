@@ -1,4 +1,4 @@
-import { UgError } from "./types.js";
+import { UgError } from "./types.ts";
 
 /** Hosts, von denen das Tool abrufen darf. Alles andere wird abgelehnt (kein offener Proxy). */
 const ALLOWED_HOSTS = new Set(["tabs.ultimate-guitar.com"]);

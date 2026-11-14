@@ -18,12 +18,12 @@ export interface UgTab {
 
 /** Fehler, deren Nachricht direkt in der Weboberfläche angezeigt werden darf. */
 export class UgError extends Error {
-  constructor(
-    message: string,
-    /** HTTP-Status, den der Server dafür zurückgibt. */
-    readonly status: 400 | 422 | 502 | 504 = 400,
-  ) {
+  /** HTTP-Status, den der Server dafür zurückgibt. */
+  readonly status: 400 | 422 | 502 | 504;
+
+  constructor(message: string, status: 400 | 422 | 502 | 504 = 400) {
     super(message);
     this.name = "UgError";
+    this.status = status;
   }
 }

@@ -11,12 +11,11 @@ fertige `.tex`-Datei herunterladen.
 ## Entwicklung
 
 ```bash
+nvm use       # Node 26 laut .nvmrc (mindestens 24)
 npm install
 npm test
 npm run dev   # http://localhost:3000
 ```
-
-Node 22 oder neuer.
 
 ## Danksagung
 

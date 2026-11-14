@@ -4,7 +4,7 @@
  */
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { extractUgTab } from "../../src/ug/extract.js";
+import { extractUgTab } from "../../src/ug/extract.ts";
 
 const CASES = [
   {

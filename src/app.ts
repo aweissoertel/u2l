@@ -1,6 +1,6 @@
 import { Hono } from "hono";
-import { fetchUgTab } from "./ug/fetch.js";
-import { UgError, type UgTab } from "./ug/types.js";
+import { fetchUgTab } from "./ug/fetch.ts";
+import { UgError, type UgTab } from "./ug/types.ts";
 
 export interface AppDeps {
   fetchTab: (url: string) => Promise<UgTab>;

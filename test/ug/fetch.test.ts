@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import { fetchUgTab } from "../../src/ug/fetch.js";
-import { buildUgHtml, sampleStore } from "../helpers/ug-html.js";
+import { fetchUgTab } from "../../src/ug/fetch.ts";
+import { buildUgHtml, sampleStore } from "../helpers/ug-html.ts";
 
 const URL = "https://tabs.ultimate-guitar.com/tab/test/testlied-chords-1";
 

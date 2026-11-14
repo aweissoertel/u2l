@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { decodeHtmlAttribute, extractUgTab } from "../../src/ug/extract.js";
-import { UgError } from "../../src/ug/types.js";
-import { buildUgHtml, sampleStore } from "../helpers/ug-html.js";
+import { decodeHtmlAttribute, extractUgTab } from "../../src/ug/extract.ts";
+import { UgError } from "../../src/ug/types.ts";
+import { buildUgHtml, sampleStore } from "../helpers/ug-html.ts";
 
 const URL = "https://tabs.ultimate-guitar.com/tab/test/testlied-chords-1";
 

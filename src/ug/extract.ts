@@ -1,5 +1,5 @@
-import { normalizeUgText } from "./normalize.js";
-import { UgError, type UgTab } from "./types.js";
+import { normalizeUgText } from "./normalize.ts";
+import { UgError, type UgTab } from "./types.ts";
 
 const STORE_RE = /<div[^>]*\bclass="js-store"[^>]*\bdata-content="([^"]*)"/;
 
